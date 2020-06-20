@@ -1,0 +1,48 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: example-php-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: example-php-app
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: example-php-app
+    spec:
+      containers:
+        - name: app
+          image: bslawianowski/nginx-php:latest
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: healthcheck
+              containerPort: 8081
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf.d
+              readOnly: true
+          readinessProbe:
+            initialDelaySeconds: 10
+            httpGet:
+              path: /ping
+              port: healthcheck
+          livenessProbe:
+            initialDelaySeconds: 30
+            httpGet:
+              path: /ping
+              port: healthcheck
+      enableServiceLinks: false
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 0
+      terminationGracePeriodSeconds: 60
+      volumes:
+      - name: nginx-config
+        configMap:
+          name: nginx-config
