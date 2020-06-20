@@ -1,12 +1,14 @@
 FROM ubuntu:focal
 
 ARG LOCALE=en_US
+ARG ADDITIONAL_LOCALE=pl_PL
 
 RUN apt-get update && \
     apt-get install -y ca-certificates locales curl iputils-ping net-tools vim-tiny nginx supervisor dumb-init \
         php7.4-fpm php7.4-cli php7.4-bcmath php7.4-curl php7.4-gd php7.4-intl php7.4-json php7.4-mbstring \
         php7.4-redis php7.4-pgsql php7.4-mysql php7.4-opcache php7.4-igbinary php7.4-soap php7.4-xml php7.4-zip && \
     localedef -i ${LOCALE} -c -f UTF-8 -A /usr/share/locale/locale.alias ${LOCALE}.UTF-8 && \
+    localedef -i ${ADDITIONAL_LOCALE} -c -f UTF-8 -A /usr/share/locale/locale.alias ${ADDITIONAL_LOCALE}.UTF-8 && \
     rm -rf /var/lib/apt/lists/*
 
 ENV LANG=$LOCALE.UTF-8
